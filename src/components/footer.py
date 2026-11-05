@@ -1,11 +1,13 @@
 import streamlit as st 
 import base64
+from pathlib import Path
 
 def footer_home():
 
-    logo_url = r"E:\mausami.png"
+    ROOT = Path(__file__).resolve().parents[2]
+    logo_path = ROOT / "assets" / "logo.png"
 
-    with open(logo_url, "rb") as image_file: 
+    with open(logo_path, "rb") as image_file: 
         encoded_image = base64.b64encode(image_file.read()).decode()
     st.markdown(f"""
         <div style="margin-top:2rem; display: flex; gap: 6px; justify-content: center; items-align: center;">
@@ -16,9 +18,10 @@ def footer_home():
 
 def footer_dashboard():
 
-    logo_url = r"E:\mausami.png"
+    ROOT = Path(__file__).resolve().parents[2]
+    logo_path = ROOT / "assets" / "logo.png"
 
-    with open(logo_url, "rb") as image_file: 
+    with open(logo_path, "rb") as image_file: 
         encoded_image = base64.b64encode(image_file.read()).decode()
     st.markdown(f"""
         <div style="margin-top:2rem; display: flex; gap: 6px; justify-content: center; items-align: center;">
