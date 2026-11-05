@@ -58,7 +58,7 @@ def student_dashboard():
 
     cols = st.columns(2)
     for i, sub_node in enumerate(subjects): 
-        sub = sub_node['subject']
+        sub = sub_node['subjects']
         sid = sub['subject_id']
 
         stats = stats_map.get(sid, {'total': 0, 'attended': 0})
@@ -66,7 +66,7 @@ def student_dashboard():
         def unenroll_button():
                 if st.button('unenroll from this course', type='tertiary', width='stretch', icon=':material/delete_forever:'): 
                     unenroll_student_to_subject(student_id, sid)
-                    st.toast(f'Unenrolled from {sub["name"]} successfully!')
+                    st.toast(f'Unenrolled from {sub["name"]} successfully!')  
                     st.rerun()
         
         with cols[i % 2]: 
@@ -94,6 +94,7 @@ def student_screen():
     if "student_data" in st.session_state: 
         student_dashboard()
         return
+    
     c1, c2 = st.columns(2, vertical_alignment='center', gap='xxlarge')
     
     with c1:
@@ -123,7 +124,7 @@ def student_screen():
                 st.warning('Mulitple faces found')
             else: 
                 if detected: 
-                    student_id = list(detected.key())[0]
+                    student_id = list(detected.keys())[0]
                     all_students = get_all_students()
                     student = next((s for s in all_students if s['student_id'] == student_id), None)
 

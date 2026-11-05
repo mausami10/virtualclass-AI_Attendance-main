@@ -30,20 +30,15 @@ def subject_card(name, code, section, stats=None, footer_callback=None):
 
     if stats: 
         html+= """
-            <div style = "
-                display: flex; 
-                gap: 8px; 
-                flex-warp: warp;
-            ">
-            """
+        <div style = "display: flex; gap: 8px; flex-warp: warp;">
+        """
         for icon, label, value in stats: 
             html+= f'<div style="background-color: #EB459E10; padding: 5px 12px; border-radius: 12px; font-size: 0.9rem">{icon} <b>{value}</b> {label} </div>'
-    
     
         html+="</div>"
 
     st.markdown(html, unsafe_allow_html=True)
 
     if footer_callback: 
-        footer_callback()
+        footer_callback()  
     

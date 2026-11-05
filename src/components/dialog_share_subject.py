@@ -1,5 +1,4 @@
 import streamlit as st 
-from src.database.db import create_subject
 
 import segno 
 import io
@@ -7,9 +6,9 @@ import io
 
 
 @st.dialog("Share Class Link")
-def share_subject_dialog(subject_name, subject_id):
-    app_domain = "http://localhost:8501"
-    join_url = f"{app_domain}/join-code={subject_id}"
+def share_subject_dialog(subject_name, subject_code):
+    app_domain = "snapclass-main.streamlit.app"  
+    join_url = f"{app_domain}/?join-code={subject_code}"  
 
     st.header("Scan to Join")
 
@@ -24,10 +23,10 @@ def share_subject_dialog(subject_name, subject_id):
     with col1: 
         st.markdown('### Copy Link')
         st.code(join_url, language="text")
-        st.code(subject_id, language="text")
-        st.info('Copy this lonk to share on WhatsApp or Email')
+        st.code(subject_code, language="text")
+        st.info('Copy this link to share on WhatsApp or Email')
 
     with col2: 
         st.markdown('### Scan to Join')
-        st.image(out.getvalue(), caption='QRCODE for class joining')
+        st.image(out.getvalue(), caption='QRCODE for class joining')                                                       
 
