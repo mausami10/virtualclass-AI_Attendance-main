@@ -1,5 +1,5 @@
 import streamlit as st
-
+from src.database.db import enroll_student_to_subject
 from src.database.db import create_attendance 
 from src.database.config import supabase 
 

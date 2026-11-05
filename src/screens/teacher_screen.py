@@ -3,7 +3,7 @@ from src.database.config import supabase
 from src.ui.base_layout import style_background_dashboard, style_base_layout
 from src.components.header import header_dashboard
 from src.components.footer import footer_dashboard
-from src.database.db import check_teacher_exists, create_teacher, teacher_login, get_teacher_subjects
+from src.database.db import check_teacher_exists, create_teacher, teacher_login, get_teacher_subjects, get_attendance_for_teacher
 from src.components.dialog_create_subject import create_subject_dialog
 from src.components.subject_card import subject_card
 from src.components.dialog_share_subject import share_subject_dialog
@@ -69,7 +69,7 @@ def teacher_dashboard():
 
     st.divider()
 
-    if st.session_state.current_teacher_tab == "take_attedance": 
+    if st.session_state.current_teacher_tab == "take_attendance": 
         teacher_tab_take_attendance()
 
     if st.session_state.current_teacher_tab == "manage_subjects": 
@@ -141,7 +141,7 @@ def teacher_tab_take_attendance():
 
                             all_detected_ids.setdefault(student_id, []).append(f"Photo {idx+1}")
 
-                enrolled_res = supabase.table('subject_students').select("*, students(*)").eq('student_id', selected_subject_id).execute()
+                enrolled_res = supabase.table('subject_students').select("*, students(*)").eq('subject_id', selected_subject_id).execute()
                 enrolled_students = enrolled_res.data
 
                 if not enrolled_students: 
@@ -195,25 +195,66 @@ def teacher_tab_manage_subjects():
                 ("👥", "Students", sub['total_students']),
                 ("🕰️", "Classes", sub['total_classes']),
             ]
-        def share_btn(): 
-            if st.button(f"Share Code: {sub['name']}", key=f"share_{sub['subject_code']}", icon= ":material/share:"): 
-                share_subject_dialog(sub['name'], sub['subject_code'])
-            st.space()
 
-        subject_card(
-            name = sub['name'],
-            code = sub['subject_code'], 
-            section = sub['section'],
-            stats= stats,
-            footer_callback= share_btn
-        )
+            def share_btn(sub=sub): 
+                if st.button(f"Share Code: {sub['name']}", key=f"share_{sub['subject_code']}", icon= ":material/share:"): 
+                    share_subject_dialog(sub['name'], sub['subject_code'])
+                st.space()
+
+            subject_card(
+                name = sub['name'],
+                code = sub['subject_code'], 
+                section = sub['section'],
+                stats= stats,
+                footer_callback= share_btn
+            )
 
     else: 
         st.info("No SUBJECT FOUND, CREATE ONE ABOVE")
 
 def teacher_tab_attendance_records(): 
-    st.header('Keep all records here')
-    
+    st.header('Attendance Records') 
+
+    teacher_id = st.session_state.teacher_data['teacher_id'] 
+
+    records = get_attendance_for_teacher(teacher_id)
+
+    if not records: 
+        return 
+
+    data = [] 
+
+    for r in records: 
+        ts = r.get('timestamp') 
+
+        data.append({
+            "ts_group": ts.split(".")[0] if ts else None, 
+            "Time": datetime.fromisoformat(ts).strftime("%Y-%m-%d %T:%M %p") if ts else "N'A", 
+            "Subject": r['subjects']['name'], 
+            "Subject Code": r['subjects']['subject_code'], 
+            "is_present": bool(r.get('is_present', False))
+        })
+
+    df = pd.DataFrame(data)
+
+    summary = (
+        df.groupby(['ts_group', 'Time', 'Subject', 'Subject Code'])
+        .agg(
+            Present_Count = ('is_present', 'sum'), 
+            Total_Count = ('is_present', 'count')
+        ).reset_index()
+    )
+
+    summary['Attendance Stats'] = (
+        "✅" + summary['Present_Count'].astype(str) + " /"
+        + summary['Total_Count'].astype(str) + 'Students'
+    )
+
+    display_df = ( summary.sort_values(by='ts_group', ascending=False)
+                  [['Time', 'Subject', 'Subject Code', 'Attendance Stats']]
+                  )
+
+    st.dataframe(display_df, width='stretch', hide_index=True)
 
 def login_teacher(username, password): 
     if not username or not password:
