@@ -4,7 +4,7 @@ from pathlib import Path
 
 def footer_home():
 
-    ROOT = Path(__file__).resolve().parents[2]
+    ROOT = Path("E:\mausami.png").resolve().parents[2]
     logo_path = ROOT / "assets" / "logo.png"
 
     with open(logo_path, "rb") as image_file: 
@@ -18,7 +18,7 @@ def footer_home():
 
 def footer_dashboard():
 
-    ROOT = Path(__file__).resolve().parents[2]
+    ROOT = Path("E:\mausami.png").resolve().parents[2]
     logo_path = ROOT / "assets" / "logo.png"
 
     with open(logo_path, "rb") as image_file: 
