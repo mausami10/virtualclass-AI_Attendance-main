@@ -1,14 +1,19 @@
+# Secrets and environment
 .env
-.vscode
+.streamlit/secrets.toml
 
-
-.pyc
-.DS_Store
-__pycache__/
-
+# Virtual environment
 venv/
+.venv/
 
-.streamlit/
+# Python cache
+__pycache__/
+*.py[cod]
 
+# Editor and OS files
+.vscode/
+.DS_Store
+Thumbs.db
 
+# Build output
 dist/
